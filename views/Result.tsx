@@ -34,6 +34,29 @@ export const Result: React.FC<ResultProps> = ({ image, analysisPromise, targetCa
     timestamp: new Date()
   };
 
+  // Check for error states defined in geminiService
+  const isError = item.name === "Missing API Key" || item.name === "Analysis Failed" || item.name === "Configuration Error";
+
+  if (!loading && isError) {
+      return (
+        <div className="bg-black text-white font-display h-screen w-full flex flex-col items-center justify-center p-6 text-center z-50 absolute inset-0">
+             <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-6 border border-red-500/50">
+                <span className="material-symbols-outlined text-4xl text-red-500">warning</span>
+             </div>
+             <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-4">{item.name}</h2>
+             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed max-w-[280px] mx-auto mb-8">
+                {item.evaluation}
+             </p>
+             <button 
+                onClick={onRetake} 
+                className="px-8 py-4 bg-white text-black font-black uppercase tracking-[0.2em] hover:bg-gray-200 transition-colors"
+             >
+                Return Home
+             </button>
+        </div>
+      );
+  }
+
   const percentOfDaily = targetCalories > 0 ? Math.round((item.calories / targetCalories) * 100) : 0;
   
   // Validation: Check if critical fields are present and non-zero (except name which is string)
