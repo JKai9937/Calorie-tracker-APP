@@ -6,7 +6,6 @@ interface SettingsProps {
     onUpdateProfile: (p: UserProfile, t: number, m: Macros) => void;
 }
 
-// Logic reuse
 const calculateTarget = (weight: number, height: number, goal: string, lifestyle: string, gender: string) => {
     const s = gender === 'male' ? 5 : -161;
     const bmr = (10 * weight) + (6.25 * height) - (5 * 25) + s;
@@ -18,7 +17,6 @@ const calculateTarget = (weight: number, height: number, goal: string, lifestyle
 };
 
 export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) => {
-    // Local state for editing form
     const [weight, setWeight] = useState(profile?.weight || 75);
     const [height, setHeight] = useState(profile?.height || 175);
     const [goal, setGoal] = useState<'lose' | 'maintain' | 'gain'>(profile?.goal || 'maintain');
@@ -28,8 +26,6 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
     const handleSave = () => {
         if (!profile) return;
         const newTarget = calculateTarget(weight, height, goal, lifestyle, profile.gender);
-        
-        // Recalc Macros
         let pSplit = 0.3, cSplit = 0.4, fSplit = 0.3;
         if (goal === 'gain') { pSplit = 0.3; cSplit = 0.5; fSplit = 0.2; }
         if (goal === 'lose') { pSplit = 0.4; cSplit = 0.3; fSplit = 0.3; }
@@ -41,7 +37,6 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
         };
 
         onUpdateProfile({ ...profile, weight, height, goal, lifestyle }, newTarget, newMacros);
-        
         setShowSaved(true);
         setTimeout(() => setShowSaved(false), 2000);
     };
@@ -59,7 +54,7 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
     }
 
     return (
-        <div className="bg-black h-full flex flex-col font-display text-white relative">
+        <div className="bg-black h-[100dvh] flex flex-col font-display text-white relative">
             <div className="p-6 pt-10 border-b border-white/20 flex justify-between items-end" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}>
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tight text-white">Settings</h1>
@@ -69,16 +64,27 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10">
-                {/* Installation Tip */}
-                 <div className="bg-[#111] p-4 border-l-2 border-white">
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="material-symbols-outlined text-white text-sm">install_mobile</span>
-                        <span className="text-xs font-bold uppercase tracking-widest text-white">Install App</span>
+                {/* Chinese Installation Instructions */}
+                <section>
+                    <div className="flex items-center gap-2 mb-4 opacity-60">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white">安装指南 // INSTALL</span>
+                        <div className="h-[1px] flex-1 bg-white/30"></div>
                     </div>
-                    <p className="text-[10px] text-gray-500 leading-relaxed uppercase font-bold">
-                        To install: Tap your browser's Share/Menu button and select "Add to Home Screen".
-                    </p>
-                </div>
+                    <div className="bg-white/5 border border-white/10 p-5 space-y-4">
+                        <div className="flex items-start gap-4">
+                            <span className="w-5 h-5 flex items-center justify-center bg-white text-black text-[10px] font-black shrink-0">iOS</span>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+                                点击 Safari 底部 <span className="text-white">“分享”</span> 图标，选择 <span className="text-white">“添加到主屏幕”</span>。
+                            </p>
+                        </div>
+                        <div className="flex items-start gap-4">
+                            <span className="w-5 h-5 flex items-center justify-center bg-white text-black text-[10px] font-black shrink-0">ADR</span>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+                                点击 Chrome 右上角 <span className="text-white">“三个点”</span>，选择 <span className="text-white">“安装应用”</span>。
+                            </p>
+                        </div>
+                    </div>
+                </section>
 
                 {/* API Key Tip */}
                 <div className="flex items-start gap-4 p-4 border border-white/10 bg-[#0a0a0a]">
@@ -88,7 +94,6 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
                          <p className="text-[10px] text-gray-500 leading-relaxed">
                              This app requires a Google Gemini API Key. Get one at 
                              <span className="text-white mx-1">aistudio.google.com</span>
-                             and add it to your deployment environment variables as <code className="text-white">API_KEY</code>.
                          </p>
                      </div>
                 </div>
@@ -106,7 +111,6 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
                     </div>
                 </section>
 
-                {/* Goal Section */}
                 <section>
                     <div className="flex items-center gap-2 mb-6 opacity-60">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white">02 // Parameters</span>
@@ -122,36 +126,18 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
                                     onChange={(e) => setGoal(e.target.value as any)}
                                     className="w-full bg-[#111] border border-white/20 p-4 font-bold uppercase text-white focus:border-white focus:ring-0 outline-none appearance-none rounded-none"
                                 >
-                                    <option value="lose" className="bg-black text-white">Lose Weight</option>
-                                    <option value="maintain" className="bg-black text-white">Maintain</option>
-                                    <option value="gain" className="bg-black text-white">Gain Muscle</option>
+                                    <option value="lose" className="bg-black text-white text-xs">Lose Weight</option>
+                                    <option value="maintain" className="bg-black text-white text-xs">Maintain</option>
+                                    <option value="gain" className="bg-black text-white text-xs">Gain Muscle</option>
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white">
                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">Lifestyle</span>
-                             <div className="relative">
-                                <select 
-                                    value={lifestyle} 
-                                    onChange={(e) => setLifestyle(e.target.value as any)}
-                                    className="w-full bg-[#111] border border-white/20 p-4 font-bold uppercase text-white focus:border-white focus:ring-0 outline-none appearance-none rounded-none"
-                                >
-                                    <option value="general" className="bg-black text-white">General (Sedentary)</option>
-                                    <option value="athlete" className="bg-black text-white">Athlete (Active)</option>
-                                </select>
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white">
-                                    <span className="material-symbols-outlined text-sm">expand_more</span>
-                                </div>
-                             </div>
-                        </div>
                     </div>
                 </section>
 
-                {/* Estimated Target Display */}
                 <div className="mt-auto pt-8 pb-4">
                      <div className="border border-white/20 bg-[#111] p-6 flex flex-col items-center justify-center gap-2 mb-4">
                          <span className="text-[10px] font-bold uppercase text-gray-500 tracking-[0.2em]">Daily Calorie Budget</span>

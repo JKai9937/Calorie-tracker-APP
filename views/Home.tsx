@@ -14,6 +14,8 @@ export const Home: React.FC<HomeProps> = ({ stats, onChangeView }) => {
     fat: acc.fat + log.macros.fat
   }), { protein: 0, carbs: 0, fat: 0 });
 
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+
   return (
     <div className="flex flex-col h-full bg-black text-white font-display overflow-hidden">
       
@@ -52,7 +54,18 @@ export const Home: React.FC<HomeProps> = ({ stats, onChangeView }) => {
         </div>
       </div>
 
-      {/* 2. Macros Section (Compact) */}
+      {/* 2. PWA Install Hint (Only shows in browser) */}
+      {!isStandalone && (
+        <div className="mx-4 mt-2 p-3 bg-white/5 border border-white/10 flex items-center justify-between">
+           <div className="flex items-center gap-3">
+             <span className="material-symbols-outlined text-white text-sm">install_mobile</span>
+             <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">Install as App for full experience</span>
+           </div>
+           <button onClick={() => onChangeView(AppView.SETTINGS)} className="text-[10px] font-black uppercase text-white underline">How?</button>
+        </div>
+      )}
+
+      {/* 3. Macros Section (Compact) */}
       <div className="flex-none flex flex-col p-4 gap-4 justify-center items-center border-b border-white/10">
          <div className="grid grid-cols-1 w-full gap-3">
              <MacroRow 
@@ -73,7 +86,7 @@ export const Home: React.FC<HomeProps> = ({ stats, onChangeView }) => {
          </div>
       </div>
 
-      {/* 3. Recent Intake List (Scrollable Area) */}
+      {/* 4. Recent Intake List (Scrollable Area) */}
       <div className="flex-1 flex flex-col p-4 min-h-0 bg-black overflow-hidden">
         <div className="flex items-center gap-2 mb-2 opacity-60">
             <span className="text-[10px] font-bold uppercase tracking-widest text-white">Recent Logs</span>
@@ -107,7 +120,7 @@ export const Home: React.FC<HomeProps> = ({ stats, onChangeView }) => {
         </div>
       </div>
 
-      {/* 4. Actions (Fixed Height) */}
+      {/* 5. Actions (Fixed Height) */}
       <div className="flex-none h-14 flex border-t border-white/20">
         <button 
           onClick={() => onChangeView(AppView.INPUT)}
