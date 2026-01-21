@@ -11,18 +11,14 @@ export async function analyzeFoodImage(base64Image: string): Promise<FoodItem> {
   // Clean base64 data
   const data = base64Image.includes(',') ? base64Image.split(',')[1] : base64Image;
 
-  const prompt = `你是一个专业的营养分析师。请分析这张图片中的食物：
-  1. 识别主要食物名称（中文）。
-  2. 估算热量（kcal）和三大营养素（蛋白质、碳水、脂肪，单位克）。
-  3. 提供一句简短的专业点评（20字以内）。
-  
-  请直接返回以下 JSON 格式，不要包含任何 Markdown 格式：
+  const prompt = `分析食物。识别名称、热量、营养素。提供简短评价。
+  必须严格返回纯 JSON，格式如下：
   {
-    "name": "食物名称",
+    "name": "食物名",
     "calories": 100,
     "macros": { "protein": 10, "carbs": 20, "fat": 5 },
     "confidence": 95,
-    "evaluation": "点评内容"
+    "evaluation": "简短评价"
   }`;
 
   try {
@@ -34,6 +30,9 @@ export async function analyzeFoodImage(base64Image: string): Promise<FoodItem> {
           { text: prompt }
         ],
       }],
+      config: {
+        temperature: 0.4, // Lower temperature for more deterministic/faster output
+      }
     });
 
     const text = response.text || "";
@@ -42,14 +41,14 @@ export async function analyzeFoodImage(base64Image: string): Promise<FoodItem> {
     const end = text.lastIndexOf('}');
     
     if (start === -1 || end === -1) {
-        throw new Error(`AI 返回了非 JSON 内容: ${text.substring(0, 100)}...`);
+        throw new Error("AI output format error");
     }
     
     const jsonStr = text.substring(start, end + 1);
     const result = JSON.parse(jsonStr);
 
     return {
-      name: result.name || "未知食物",
+      name: result.name || "Unknown",
       calories: Number(result.calories) || 0,
       macros: {
         protein: Number(result.macros?.protein) || 0,
@@ -67,7 +66,7 @@ export async function analyzeFoodImage(base64Image: string): Promise<FoodItem> {
       calories: 0,
       macros: { protein: 0, carbs: 0, fat: 0 },
       confidence: 0,
-      evaluation: `错误详情: ${error.message || '未知 API 错误'}。请尝试减小图片尺寸或检查网络。`,
+      evaluation: "请检查网络连接或稍后重试。",
       timestamp: new Date(),
     };
   }

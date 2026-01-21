@@ -51,7 +51,8 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
   const resizeAndProcess = (originalBase64: string) => {
     const img = new Image();
     img.onload = () => {
-      const MAX_DIM = 1024;
+      // Optimization: Reduced from 1024 to 640 to speed up upload/analysis significantly
+      const MAX_DIM = 640; 
       let width = img.width;
       let height = img.height;
 
@@ -73,7 +74,9 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
       const ctx = offscreenCanvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, width, height);
       
-      const resizedBase64 = offscreenCanvas.toDataURL('image/jpeg', 0.8);
+      // Optimization: Reduced quality from 0.8 to 0.5 for faster transmission
+      const resizedBase64 = offscreenCanvas.toDataURL('image/jpeg', 0.5);
+      
       setIsAnalyzing(true);
       const analysisPromise = mode === 'food' ? analyzeFoodImage(resizedBase64) : Promise.resolve(null);
       onCapture(resizedBase64, analysisPromise);
