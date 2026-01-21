@@ -91,15 +91,15 @@ export default function App() {
         try {
             const result = await analyzeFoodImage(image);
             setAnalysisResult(result);
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            // Fallback error object
+            // Fallback error object with real message
             setAnalysisResult({
                 name: "System Error",
                 calories: 0,
                 macros: { protein:0, carbs:0, fat:0 },
                 confidence: 0,
-                evaluation: "Internal processing error.",
+                evaluation: e.message || "Unknown error occurred.",
                 timestamp: new Date()
             });
         } finally {
