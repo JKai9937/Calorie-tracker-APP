@@ -10,15 +10,17 @@ import { Saved } from './views/Saved';
 import { Settings } from './views/Settings';
 import { BodyTracker } from './views/BodyTracker';
 import { AppView, DailyStats, FoodItem, UserProfile, Macros, BodyLog } from './types';
+import { analyzeFoodImage } from './services/geminiService';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<AppView>(AppView.SETUP);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
-  // State for the flow: Capture -> Analyze -> Confirm
+  // State for analysis flow
   const [capturedImage, setCapturedImage] = useState<string>('');
-  const [analysisPromise, setAnalysisPromise] = useState<Promise<FoodItem> | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<FoodItem | null>(null);
   
   // Camera Mode State
   const [cameraMode, setCameraMode] = useState<'food' | 'body'>('food');
@@ -74,12 +76,36 @@ export default function App() {
       setCurrentView(AppView.CAMERA);
   };
 
-  const handleCapture = (image: string, promise: Promise<FoodItem>) => {
+  // REFACTORED: Handle capture and analysis in App controller
+  const handleCapture = async (image: string) => {
     setCapturedImage(image);
     
     if (cameraMode === 'food') {
-        setAnalysisPromise(promise);
+        // 1. Immediately switch view
         setCurrentView(AppView.RESULT);
+        // 2. Set Loading State
+        setIsAnalyzing(true);
+        setAnalysisResult(null);
+
+        // 3. Trigger API Call
+        try {
+            const result = await analyzeFoodImage(image);
+            setAnalysisResult(result);
+        } catch (e) {
+            console.error(e);
+            // Fallback error object
+            setAnalysisResult({
+                name: "System Error",
+                calories: 0,
+                macros: { protein:0, carbs:0, fat:0 },
+                confidence: 0,
+                evaluation: "Internal processing error.",
+                timestamp: new Date()
+            });
+        } finally {
+            setIsAnalyzing(false);
+        }
+
     } else {
         // Body Mode
         setPendingBodyImage(image);
@@ -118,7 +144,8 @@ export default function App() {
         return (
           <Result 
             image={capturedImage} 
-            analysisPromise={analysisPromise!} 
+            result={analysisResult}
+            isLoading={isAnalyzing}
             targetCalories={stats.targetCalories}
             onConfirm={handleConfirmLog}
             onRetake={() => openCamera('food')}

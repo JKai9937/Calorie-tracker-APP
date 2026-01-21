@@ -1,9 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { AppView } from '../types';
-import { analyzeFoodImage } from '../services/geminiService';
 
 interface CameraProps {
-  onCapture: (image: string, analysisPromise: Promise<any>) => void;
+  onCapture: (image: string) => void;
   onClose: () => void;
   mode?: 'food' | 'body';
 }
@@ -13,7 +11,6 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -47,11 +44,9 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
     }
   };
 
-  // Helper to resize image to prevent API payload errors
-  const resizeAndProcess = (originalBase64: string) => {
+  const resizeAndEmit = (originalBase64: string) => {
     const img = new Image();
     img.onload = () => {
-      // Optimization: Reduced from 1024 to 640 to speed up upload/analysis significantly
       const MAX_DIM = 640; 
       let width = img.width;
       let height = img.height;
@@ -74,12 +69,8 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
       const ctx = offscreenCanvas.getContext('2d');
       ctx?.drawImage(img, 0, 0, width, height);
       
-      // Optimization: Reduced quality from 0.8 to 0.5 for faster transmission
       const resizedBase64 = offscreenCanvas.toDataURL('image/jpeg', 0.5);
-      
-      setIsAnalyzing(true);
-      const analysisPromise = mode === 'food' ? analyzeFoodImage(resizedBase64) : Promise.resolve(null);
-      onCapture(resizedBase64, analysisPromise);
+      onCapture(resizedBase64); // Pass clean base64 string to App
     };
     img.src = originalBase64;
   };
@@ -87,16 +78,14 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!imageUrl) return;
-    setIsAnalyzing(true);
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const reader = new FileReader();
-      reader.onloadend = () => resizeAndProcess(reader.result as string);
+      reader.onloadend = () => resizeAndEmit(reader.result as string);
       reader.readAsDataURL(blob);
     } catch (error) {
-      alert("无法加载图片链接。请确保图片允许跨域访问。");
-      setIsAnalyzing(false);
+      alert("Error loading image. Check CORS.");
     }
   };
 
@@ -104,7 +93,6 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      // Capture at video's natural size
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       const context = canvas.getContext('2d');
@@ -114,7 +102,7 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
             context.scale(-1, 1);
         }
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        resizeAndProcess(canvas.toDataURL('image/jpeg'));
+        resizeAndEmit(canvas.toDataURL('image/jpeg'));
       }
     } else {
       fileInputRef.current?.click();
@@ -189,14 +177,10 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
 
             <button 
               onClick={takePhoto}
-              disabled={isAnalyzing}
               className="relative size-20 flex items-center justify-center group"
             >
               <div className="absolute inset-0 rounded-full border-2 border-white group-active:scale-90 transition-transform"></div>
               <div className="size-16 rounded-full bg-white group-active:scale-95 transition-transform"></div>
-              {isAnalyzing && (
-                  <div className="absolute inset-0 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
-              )}
             </button>
 
             <button 
@@ -216,7 +200,7 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
                 const file = e.target.files?.[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = (ev) => resizeAndProcess(ev.target?.result as string);
+                    reader.onload = (ev) => resizeAndEmit(ev.target?.result as string);
                     reader.readAsDataURL(file);
                 }
             }}
