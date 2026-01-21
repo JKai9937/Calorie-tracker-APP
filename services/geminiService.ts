@@ -1,79 +1,73 @@
 import { GoogleGenAI } from "@google/genai";
 import { FoodItem } from "../types";
 
-const MODEL_NAME = "gemini-2.5-flash-image";
-
-// Safely access environment variable to prevent crash in browser environments
-const getApiKey = () => {
-    try {
-        if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-            return process.env.API_KEY;
-        }
-    } catch (e) {
-        console.warn("Could not access process.env.API_KEY directly.");
-    }
-    return "";
-};
-
-const apiKey = getApiKey();
+// Using gemini-3-flash-preview as it's the recommended multimodal model
+const MODEL_NAME = "gemini-3-flash-preview";
 
 export async function analyzeFoodImage(base64Image: string): Promise<FoodItem> {
-  if (!apiKey) {
-      return {
-          name: "Missing API Key",
-          calories: 0,
-          macros: { protein: 0, carbs: 0, fat: 0 },
-          confidence: 0,
-          evaluation: "API_KEY not found. Please set it in your deployment environment variables (e.g. Vercel).",
-          timestamp: new Date(),
-      };
-  }
-
+  const apiKey = process.env.API_KEY;
   const ai = new GoogleGenAI({ apiKey });
-  const cleanBase64 = base64Image.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
+  
+  // Clean base64 data
+  const data = base64Image.includes(',') ? base64Image.split(',')[1] : base64Image;
 
-  const prompt = `Analyze this food image. Identify the main dish. 
-  1. Estimate calories and macros (protein, carbs, fat).
-  2. Provide a short, 1-sentence evaluation.
-  Return ONLY raw JSON:
+  const prompt = `你是一个专业的营养分析师。请分析这张图片中的食物：
+  1. 识别主要食物名称（中文）。
+  2. 估算热量（kcal）和三大营养素（蛋白质、碳水、脂肪，单位克）。
+  3. 提供一句简短的专业点评（20字以内）。
+  
+  请直接返回以下 JSON 格式，不要包含任何 Markdown 格式：
   {
-    "name": "Food Name",
+    "name": "食物名称",
     "calories": 100,
     "macros": { "protein": 10, "carbs": 20, "fat": 5 },
     "confidence": 95,
-    "evaluation": "Advice"
+    "evaluation": "点评内容"
   }`;
 
   try {
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
-      contents: {
+      contents: [{
         parts: [
-          { inlineData: { mimeType: "image/jpeg", data: cleanBase64 } },
+          { inlineData: { mimeType: "image/jpeg", data: data } },
           { text: prompt }
         ],
-      },
+      }],
     });
 
-    let text = response.text || "";
-    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const data = JSON.parse(text);
+    const text = response.text || "";
+    // Extract JSON safely
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    
+    if (start === -1 || end === -1) {
+        throw new Error(`AI 返回了非 JSON 内容: ${text.substring(0, 100)}...`);
+    }
+    
+    const jsonStr = text.substring(start, end + 1);
+    const result = JSON.parse(jsonStr);
 
     return {
-      name: data.name || "Unknown Food",
-      calories: data.calories || 0,
-      macros: data.macros || { protein: 0, carbs: 0, fat: 0 },
-      confidence: data.confidence || 0,
-      evaluation: data.evaluation || "",
+      name: result.name || "未知食物",
+      calories: Number(result.calories) || 0,
+      macros: {
+        protein: Number(result.macros?.protein) || 0,
+        carbs: Number(result.macros?.carbs) || 0,
+        fat: Number(result.macros?.fat) || 0
+      },
+      confidence: result.confidence || 0,
+      evaluation: result.evaluation || "",
       timestamp: new Date(),
     };
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Gemini API Error:", error);
     return {
       name: "Analysis Failed",
       calories: 0,
       macros: { protein: 0, carbs: 0, fat: 0 },
       confidence: 0,
-      evaluation: "Error communicating with Gemini API.",
+      evaluation: `错误详情: ${error.message || '未知 API 错误'}。请尝试减小图片尺寸或检查网络。`,
       timestamp: new Date(),
     };
   }

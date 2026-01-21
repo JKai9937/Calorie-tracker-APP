@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { UserProfile, Macros } from '../types';
 
@@ -86,18 +87,6 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
                     </div>
                 </section>
 
-                {/* API Key Tip */}
-                <div className="flex items-start gap-4 p-4 border border-white/10 bg-[#0a0a0a]">
-                     <span className="material-symbols-outlined text-gray-500 text-lg mt-0.5">key</span>
-                     <div>
-                         <h3 className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">API Key Config</h3>
-                         <p className="text-[10px] text-gray-500 leading-relaxed">
-                             This app requires a Google Gemini API Key. Get one at 
-                             <span className="text-white mx-1">aistudio.google.com</span>
-                         </p>
-                     </div>
-                </div>
-
                 {/* Profile Section */}
                 <section>
                     <div className="flex items-center gap-2 mb-6 opacity-60">
@@ -160,6 +149,7 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
     );
 };
 
+// Compact input row for settings
 const InputRow = ({ label, value, onChange }: any) => (
     <div className="flex flex-col gap-2">
         <span className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">{label}</span>
