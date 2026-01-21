@@ -65,29 +65,40 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10">
-                {/* Chinese Installation Instructions */}
+                {/* Detailed Installation Instructions */}
                 <section>
                     <div className="flex items-center gap-2 mb-4 opacity-60">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white">安装指南 // INSTALL</span>
                         <div className="h-[1px] flex-1 bg-white/30"></div>
                     </div>
-                    <div className="bg-white/5 border border-white/10 p-5 space-y-4">
-                        <div className="flex items-start gap-4">
-                            <span className="w-5 h-5 flex items-center justify-center bg-white text-black text-[10px] font-black shrink-0">iOS</span>
+                    <div className="bg-white/5 border border-white/10 p-5 space-y-6">
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 bg-white text-black text-[9px] font-black uppercase">Android / Chrome</span>
+                            </div>
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
-                                点击 Safari 底部 <span className="text-white">“分享”</span> 图标，选择 <span className="text-white">“添加到主屏幕”</span>。
+                                点击右上角 <span className="text-white">“三个点”</span> 菜单，寻找 <span className="text-white">“安装应用”</span> 或 <span className="text-white">“添加至主屏幕”</span>。
                             </p>
                         </div>
-                        <div className="flex items-start gap-4">
-                            <span className="w-5 h-5 flex items-center justify-center bg-white text-black text-[10px] font-black shrink-0">ADR</span>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 bg-white text-black text-[9px] font-black uppercase">PC / Chrome</span>
+                            </div>
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
-                                点击 Chrome 右上角 <span className="text-white">“三个点”</span>，选择 <span className="text-white">“安装应用”</span>。
+                                点击地址栏末端的 <span className="text-white">“安装图标”</span> (一个小显示器形状)。
+                            </p>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 bg-white text-black text-[9px] font-black uppercase">iOS / Safari</span>
+                            </div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+                                点击底部 <span className="text-white">“分享”</span> 图标，向上滑动并点击 <span className="text-white">“添加到主屏幕”</span>。
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* Profile Section */}
                 <section>
                     <div className="flex items-center gap-2 mb-6 opacity-60">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white">01 // Metrics</span>
@@ -113,11 +124,11 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
                                 <select 
                                     value={goal} 
                                     onChange={(e) => setGoal(e.target.value as any)}
-                                    className="w-full bg-[#111] border border-white/20 p-4 font-bold uppercase text-white focus:border-white focus:ring-0 outline-none appearance-none rounded-none"
+                                    className="w-full bg-[#111] border border-white/20 p-4 font-bold uppercase text-white focus:border-white focus:ring-0 outline-none appearance-none rounded-none text-xs"
                                 >
-                                    <option value="lose" className="bg-black text-white text-xs">Lose Weight</option>
-                                    <option value="maintain" className="bg-black text-white text-xs">Maintain</option>
-                                    <option value="gain" className="bg-black text-white text-xs">Gain Muscle</option>
+                                    <option value="lose" className="bg-black text-white">Lose Weight</option>
+                                    <option value="maintain" className="bg-black text-white">Maintain</option>
+                                    <option value="gain" className="bg-black text-white">Gain Muscle</option>
                                 </select>
                                 <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white">
                                     <span className="material-symbols-outlined text-sm">expand_more</span>
@@ -136,6 +147,7 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
                          <span className="text-xs font-bold text-gray-400">KCAL</span>
                      </div>
 
+                    {/* Fixed: Removed non-standard 'handleSave' prop from button */}
                     <button 
                         onClick={handleSave}
                         className="w-full h-16 bg-white text-black text-sm font-black uppercase tracking-[0.2em] hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
@@ -149,7 +161,6 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
     );
 };
 
-// Compact input row for settings
 const InputRow = ({ label, value, onChange }: any) => (
     <div className="flex flex-col gap-2">
         <span className="text-[10px] font-bold uppercase text-gray-500 tracking-widest">{label}</span>

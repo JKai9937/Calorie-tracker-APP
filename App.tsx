@@ -14,6 +14,7 @@ import { AppView, DailyStats, FoodItem, UserProfile, Macros, BodyLog } from './t
 export default function App() {
   const [currentView, setCurrentView] = useState<AppView>(AppView.SETUP);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   // State for the flow: Capture -> Analyze -> Confirm
   const [capturedImage, setCapturedImage] = useState<string>('');
@@ -32,6 +33,22 @@ export default function App() {
   });
 
   const [bodyLogs, setBodyLogs] = useState<BodyLog[]>([]);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   const handleSetupComplete = (newProfile: UserProfile, calculatedTarget: number, calculatedMacros: Macros) => {
     setProfile(newProfile);
@@ -94,7 +111,7 @@ export default function App() {
       case AppView.SETUP:
         return <Setup onComplete={handleSetupComplete} />;
       case AppView.HOME:
-        return <Home stats={stats} onChangeView={(v) => v === AppView.CAMERA ? openCamera('food') : setCurrentView(v)} />;
+        return <Home stats={stats} onChangeView={(v) => v === AppView.CAMERA ? openCamera('food') : setCurrentView(v)} installPrompt={deferredPrompt} onInstall={handleInstall} />;
       case AppView.CAMERA:
         return <Camera onCapture={handleCapture} onClose={() => setCurrentView(cameraMode === 'body' ? AppView.BODY_TRACKER : AppView.HOME)} mode={cameraMode} />;
       case AppView.RESULT:
@@ -130,7 +147,6 @@ export default function App() {
     }
   };
 
-  // Views that hide the layout wrapper
   const fullScreenViews = [AppView.SETUP, AppView.CAMERA, AppView.RESULT, AppView.INPUT, AppView.SAVED];
 
   if (fullScreenViews.includes(currentView)) {
@@ -139,14 +155,11 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-[100dvh] max-w-md mx-auto bg-black overflow-hidden border-x border-white/10 shadow-2xl">
-      {/* Main Content */}
       <main className="flex-grow overflow-y-auto bg-black scrollbar-hide flex flex-col relative">
         <div className={currentView === AppView.HOME ? 'pt-[env(safe-area-inset-top)]' : ''}>
            {renderView()}
         </div>
       </main>
-
-      {/* Navbar - Fixed Bottom */}
       <div style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} className="bg-black border-t border-white/10">
         <NavBar currentView={currentView} onChangeView={setCurrentView} />
       </div>

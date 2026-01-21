@@ -9,16 +9,16 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn.jsdelivr.net/gh/google-fonts/noto-emoji@main/svg/emoji_u1f371.svg",
+      "src": "https://img.icons8.com/ios-filled/192/ffffff/steaming-bowl.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "https://cdn.jsdelivr.net/gh/google-fonts/noto-emoji@main/svg/emoji_u1f371.svg",
+      "src": "https://img.icons8.com/ios-filled/512/ffffff/steaming-bowl.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
