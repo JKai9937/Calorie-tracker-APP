@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Intake // Tracker</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "industrial-bg": "#E5E5E5",
+              "industrial-dark": "#A3A3A3",
+              "industrial-darker": "#949494",
+              "industrial-black": "#000000",
+              "industrial-text": "#404040",
+              "profile-bg": "#1c1c1e",
+              "profile-border": "#2c2c2e",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0",
+              lg: "0",
+              xl: "0",
+              // We rely on 'full' class being explicitly used for circles
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Reset defaults but allow overrides via utility classes */
+      body {
+        background-color: #E5E5E5;
+        overscroll-behavior: none;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      .material-symbols-outlined.filled {
+        font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      /* Hide scrollbar for clean UI */
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+      input[type=range] {
+        border-radius: 0 !important;
+      }
+      input[type=range]::-webkit-slider-thumb {
+        border-radius: 0 !important;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@google/genai": "https://esm.sh/@google/genai@^1.38.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

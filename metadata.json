@@ -1,0 +1,7 @@
+{
+  "name": "Easy track",
+  "description": "A brutalist AI-powered calorie tracker that analyzes food images using Gemini.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
