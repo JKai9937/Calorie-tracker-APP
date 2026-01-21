@@ -2,7 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- PWA / Mobile Web App Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Link the Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/google-fonts/noto-emoji@main/svg/emoji_u1f371.svg">
+    
     <title>Intake // Tracker</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -29,7 +41,6 @@
               DEFAULT: "0",
               lg: "0",
               xl: "0",
-              // We rely on 'full' class being explicitly used for circles
             },
           },
         },
@@ -38,9 +49,21 @@
     <style>
       /* Reset defaults but allow overrides via utility classes */
       body {
-        background-color: #E5E5E5;
-        overscroll-behavior: none;
+        background-color: #000000; /* Default to black for PWA loading */
+        overscroll-behavior-y: none; /* Prevent pull-to-refresh bounce */
+        -webkit-tap-highlight-color: transparent;
+        /* Disable text selection for app-like feel */
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
       }
+      
+      /* Restore selection for input fields */
+      input, textarea {
+        user-select: text;
+        -webkit-user-select: text;
+      }
+
       .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
       }

@@ -43,7 +43,10 @@ export const Setup: React.FC<SetupProps> = ({ onComplete }) => {
   return (
     <div className="relative flex flex-col h-full w-full bg-black text-white overflow-hidden font-display">
       {/* Header */}
-      <header className="pt-8 pb-4 px-6 border-b border-white/20 flex justify-between items-end flex-none">
+      <header 
+        className="pt-8 pb-4 px-6 border-b border-white/20 flex justify-between items-end flex-none"
+        style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}
+      >
         <div>
             <h1 className="text-3xl font-black tracking-tighter uppercase leading-none text-white">Setup</h1>
             <div className="flex items-center gap-2 mt-2">
@@ -113,7 +116,10 @@ export const Setup: React.FC<SetupProps> = ({ onComplete }) => {
         )}
       </main>
 
-      <footer className="p-6 bg-black border-t border-white/20 z-20 flex-none">
+      <footer 
+        className="p-6 bg-black border-t border-white/20 z-20 flex-none"
+        style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
+      >
         {step === 1 ? (
             <button 
                 onClick={() => setStep(2)}

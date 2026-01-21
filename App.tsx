@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavBar } from './components/NavBar';
 import { Setup } from './views/Setup';
 import { Home } from './views/Home';
@@ -142,7 +142,10 @@ export default function App() {
     <div className="flex flex-col h-[100dvh] max-w-md mx-auto bg-industrial-bg overflow-hidden shadow-2xl border-x border-[#d4d4d4]">
       {/* Header - Only visible on non-fullscreen views like Home/Profile */}
       {currentView !== AppView.HOME && currentView !== AppView.SETTINGS && currentView !== AppView.BODY_TRACKER && (
-         <header className="flex-none px-5 py-6 bg-industrial-bg flex items-center justify-between border-b border-[#E5E5E5]">
+         <header 
+            className="flex-none px-5 py-6 bg-industrial-bg flex items-center justify-between border-b border-[#E5E5E5]"
+            style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
+         >
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-black text-3xl">grid_view</span>
             <h1 className="text-xl font-extrabold tracking-tighter uppercase leading-none text-black">INTAKE // TRACKER</h1>
@@ -155,11 +158,16 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-grow overflow-y-auto bg-industrial-bg scrollbar-hide flex flex-col relative">
-        {renderView()}
+        {/* For Home view specifically, we might want top padding if there's no header */}
+        <div className={currentView === AppView.HOME ? 'pt-[env(safe-area-inset-top)]' : ''}>
+           {renderView()}
+        </div>
       </main>
 
-      {/* Navbar */}
-      <NavBar currentView={currentView} onChangeView={setCurrentView} />
+      {/* Navbar - Add padding bottom for home indicator */}
+      <div style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} className="bg-industrial-bg border-t border-[#D4D4D4]">
+        <NavBar currentView={currentView} onChangeView={setCurrentView} />
+      </div>
     </div>
   );
 }

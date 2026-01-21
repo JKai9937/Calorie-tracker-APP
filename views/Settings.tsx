@@ -60,7 +60,7 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
 
     return (
         <div className="bg-black h-full flex flex-col font-display text-white relative">
-            <div className="p-6 border-b border-white/20 flex justify-between items-end">
+            <div className="p-6 pt-10 border-b border-white/20 flex justify-between items-end" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}>
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tight text-white">Settings</h1>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">System Configuration</p>
@@ -69,6 +69,17 @@ export const Settings: React.FC<SettingsProps> = ({ profile, onUpdateProfile }) 
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10">
+                {/* Installation Tip */}
+                 <div className="bg-[#111] p-4 border-l-2 border-white">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-white text-sm">install_mobile</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-white">Install App</span>
+                    </div>
+                    <p className="text-[10px] text-gray-500 leading-relaxed uppercase font-bold">
+                        To install: Tap your browser's Share/Menu button and select "Add to Home Screen".
+                    </p>
+                </div>
+
                 {/* Profile Section */}
                 <section>
                     <div className="flex items-center gap-2 mb-6 opacity-60">

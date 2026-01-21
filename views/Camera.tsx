@@ -118,7 +118,11 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
       {/* Overlays */}
       <div className="relative z-10 flex flex-col h-full justify-between pointer-events-none">
         {/* Top Controls - TRANSPARENT BACKGROUND */}
-        <div className="flex items-center justify-between p-6 pt-12 pointer-events-auto">
+        {/* Added safe-area padding for notches/dynamic island */}
+        <div 
+          className="flex items-center justify-between p-6 pointer-events-auto"
+          style={{ paddingTop: 'max(3rem, env(safe-area-inset-top))' }}
+        >
           <button 
             onClick={onClose}
             className="flex items-center justify-center size-10 text-white active:opacity-70"
@@ -151,7 +155,10 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
         </div>
 
         {/* Bottom Controls */}
-        <div className="flex flex-col w-full pointer-events-auto bg-black/20 backdrop-blur-md pb-12 pt-8">
+        <div 
+            className="flex flex-col w-full pointer-events-auto bg-black/20 backdrop-blur-md pb-12 pt-8"
+            style={{ paddingBottom: 'max(3rem, env(safe-area-inset-bottom))' }}
+        >
           {isAnalyzing && (
              <div className="absolute top-[-50px] left-0 w-full flex justify-center">
                <div className="bg-yellow-400 text-black px-4 py-1 font-bold text-xs uppercase tracking-widest animate-pulse">
@@ -169,11 +176,7 @@ export const Camera: React.FC<CameraProps> = ({ onCapture, onClose, mode = 'food
               <span className="material-symbols-outlined text-[32px] drop-shadow-md">photo_library</span>
             </button>
             
-            {/* iPhone Style Shutter Button 
-                Structure:
-                - Outer: w-20 h-20, border-4 white (The Ring), bg-black (The Gap)
-                - Inner: w-16 h-16, bg-white (The Circle)
-            */}
+            {/* iPhone Style Shutter Button */}
             <button 
               onClick={takePhoto}
               disabled={isAnalyzing}
