@@ -138,34 +138,16 @@ export default function App() {
   }
 
   return (
-    // Use h-[100dvh] to fix mobile browser address bar height issues
-    <div className="flex flex-col h-[100dvh] max-w-md mx-auto bg-industrial-bg overflow-hidden shadow-2xl border-x border-[#d4d4d4]">
-      {/* Header - Only visible on non-fullscreen views like Home/Profile */}
-      {currentView !== AppView.HOME && currentView !== AppView.SETTINGS && currentView !== AppView.BODY_TRACKER && (
-         <header 
-            className="flex-none px-5 py-6 bg-industrial-bg flex items-center justify-between border-b border-[#E5E5E5]"
-            style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
-         >
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-black text-3xl">grid_view</span>
-            <h1 className="text-xl font-extrabold tracking-tighter uppercase leading-none text-black">INTAKE // TRACKER</h1>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-medium text-industrial-text tracking-widest">V.1.0</span>
-          </div>
-        </header>
-      )}
-
+    <div className="flex flex-col h-[100dvh] max-w-md mx-auto bg-black overflow-hidden border-x border-white/10 shadow-2xl">
       {/* Main Content */}
-      <main className="flex-grow overflow-y-auto bg-industrial-bg scrollbar-hide flex flex-col relative">
-        {/* For Home view specifically, we might want top padding if there's no header */}
+      <main className="flex-grow overflow-y-auto bg-black scrollbar-hide flex flex-col relative">
         <div className={currentView === AppView.HOME ? 'pt-[env(safe-area-inset-top)]' : ''}>
            {renderView()}
         </div>
       </main>
 
-      {/* Navbar - Add padding bottom for home indicator */}
-      <div style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} className="bg-industrial-bg border-t border-[#D4D4D4]">
+      {/* Navbar - Fixed Bottom */}
+      <div style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} className="bg-black border-t border-white/10">
         <NavBar currentView={currentView} onChangeView={setCurrentView} />
       </div>
     </div>
